@@ -1,0 +1,27 @@
+restic_locations:
+  files:
+    from: /home/vagrant/
+    to:
+      - s3
+    cron: '0 0 * * *'
+    options:
+      backup:
+        exclude:
+          - '.profile'
+          - '.ssh'
+          - '.ansible'
+          - '.bashrc'
+          - '.viminfo'
+          - '.wget-hsts'
+          - '.bash_history'
+      forget:
+        keep-last: 3
+
+restic_backends:
+  s3:
+    type: s3
+    path: s3.amazonaws.com/my-bucket/my-dir
+    AWS_ACCESS_KEY_ID: XXXXXXXXXXXXXXXXXXXXXX
+    AWS_SECRET_ACCESS_KEY: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  
+autorestic_generated_conf_path: ./
