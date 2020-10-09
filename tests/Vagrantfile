@@ -31,13 +31,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             ansible.limit = "all"
       ansible.extra_vars = {}
 
-      #ARGV.each do |opt|
-      #  if opt == '--graylog-update'
-      #      ansible.extra_vars['graylog_update'] = true
-      #      ansible.tags = "graylog_update"
-      #  end
-      #end
-
         end
 
   config.vm.network "private_network", ip: ipadd
