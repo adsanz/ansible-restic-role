@@ -15,11 +15,7 @@ restic_locations:
       - s3
     cron: '0 0 * * *'
     options:
-    backup:
-        exclude:
-        - '/path/to/media/do-not-want-this-on-backup'
-        - '*.this-files-sucks'
-    forget:
+      forget:
         #keep-last: 5 # always keep at least 5 snapshots
         #keep-hourly: 3 # keep 3 last hourly shapshots
         #keep-daily: 4 # keep 4 last daily shapshots
@@ -27,6 +23,10 @@ restic_locations:
         #keep-monthly: 12 # keep 12 last monthly shapshots
         #keep-yearly: 7 # keep 7 last yearly shapshots
         keep-within: '6m' # keep snapshots from the last 6 month
+    backup:
+        exclude:
+        - '/path/to/media/do-not-want-this-on-backup'
+        - '*.this-files-sucks'
   db:
     from: /path/to/db_dump
     to:
