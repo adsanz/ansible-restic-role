@@ -52,7 +52,7 @@
     state: present
     env: yes
     name: PATH
-    job: /usr/local/sbin:/usr/local/bin
+    job: /usr/local/sbin:/usr/local/bin:/usr/bin/
 
 - name: Launch autorestic cron
   become: yes
