@@ -28,6 +28,8 @@
     chmod +x restic;
     mv restic /usr/local/bin/;
     rm -fr restic.bz2
+   args:
+    executable: /bin/bash
 
 - name: check if autorestic is installed
   become: yes
@@ -38,7 +40,9 @@
 - name: Install auotrestic
   when: not autorestic_status.stat.exists
   become: yes
-  shell: curl -s https://raw.githubusercontent.com/CupCakeArmy/autorestic/master/install.sh | bash
+  shell: set -o pipefail && curl -s https://raw.githubusercontent.com/CupCakeArmy/autorestic/master/install.sh | bash
+  args:
+    executable: /bin/bash
 
 - name: Configure backups
   become: yes
@@ -61,6 +65,13 @@
     name: "Autorestic cron check"
     minute: "*/5"
     job: "autorestic -c /root/.autorestic.yml cron"
+
+- name: Launch forget cron
+  become: yes
+  cron:
+    state: present
+    name: "Autorestic forget old snap policy"
+    weekday: "6"
 
 - name: Run autorestic check
   become: yes
