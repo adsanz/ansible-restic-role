@@ -72,6 +72,7 @@
     state: present
     name: "Autorestic forget old snap policy"
     weekday: "6"
+    job: "autorestic -c /root/.autorestic.yml forget"
 
 - name: Run autorestic check
   become: yes
@@ -84,3 +85,4 @@
   fetch:
     src: /root/.autorestic.yml
     dest: "{{ autorestic_generated_conf_path }}"
+    flat: yes

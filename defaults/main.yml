@@ -59,4 +59,4 @@ restic_backends:
     AWS_SECRET_ACCESS_KEY: secret
 
 # https://cupcakearmy.github.io/autorestic/qa#my-config-file-was-moved
-autorestic_generated_conf_path: /path/to/save/generatedresticfile/
+autorestic_generated_conf_path: files/
