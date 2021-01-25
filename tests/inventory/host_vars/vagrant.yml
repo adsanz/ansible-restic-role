@@ -16,12 +16,32 @@ restic_locations:
           - '.bash_history'
       forget:
         keep-last: 3
-
+  test:
+    from: /home/root
+    to:
+      - local
+    cron: '0 0 * * *'
+    options:
+      backup:
+        exclude:
+          - '.profile'
+          - '.ssh'
+          - '.ansible'
+          - '.bashrc'
+          - '.viminfo'
+          - '.wget-hsts'
+          - '.bash_history'
+      forget:
+        keep-last: 3
+autorestic_check: false
 restic_backends:
   s3:
     type: s3
     path: s3.amazonaws.com/my-bucket/my-dir
     AWS_ACCESS_KEY_ID: XXXXXXXXXXXXXXXXXXXXXX
     AWS_SECRET_ACCESS_KEY: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  local:
+    type: local
+    path: /tmp/
   
 autorestic_generated_conf_path: ./

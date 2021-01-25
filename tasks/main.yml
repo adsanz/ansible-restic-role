@@ -28,7 +28,7 @@
     chmod +x restic;
     mv restic /usr/local/bin/;
     rm -fr restic.bz2
-   args:
+  args:
     executable: /bin/bash
 
 - name: check if autorestic is installed

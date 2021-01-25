@@ -1,4 +1,4 @@
 ---
 - hosts: vagrant
   roles:
-    - ../../restic.role
+    - ../../ansible-restic-role
