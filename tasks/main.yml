@@ -1,0 +1,99 @@
+---
+- name: Install restic via repo
+  become: yes
+  when: restic_repo_install
+  apt:
+    name: restic
+    state: present
+
+- name: Install bzip2 if binary install on
+  become: yes
+  when: restic_binary_install
+  apt:
+    name: bzip2
+    state: present
+
+- name: check if restic is installed
+  become: yes
+  stat: 
+    path: /usr/local/bin/restic
+  register: restic_status
+
+- name: Install restic via binary
+  become: yes
+  when: restic_binary_install and not restic_status.stat.exists
+  shell: |
+    wget -O restic.bz2 https://github.com/restic/restic/releases/download/v{{ restic_version }}/restic_{{ restic_version }}_linux_amd64.bz2;
+    bunzip2 restic.bz2;
+    chmod +x restic;
+    mv restic /usr/local/bin/;
+    rm -fr restic.bz2
+  args:
+    executable: /bin/bash
+
+- name: check if autorestic is installed
+  become: yes
+  stat:
+    path: /usr/local/bin/autorestic
+  register: autorestic_status
+
+- name: Install auotrestic
+  when: not autorestic_status.stat.exists
+  become: yes
+  shell: set -o pipefail && curl -s https://raw.githubusercontent.com/CupCakeArmy/autorestic/master/install.sh | bash
+  args:
+    executable: /bin/bash
+
+- name: Configure backups
+  become: yes
+  template:
+    src: templates/autorestic.yml.j2
+    dest: /root/.autorestic.yml
+
+- name: Set PATH variable on crontab
+  become: yes
+  cron:
+    state: present
+    env: yes
+    name: PATH
+    job: /usr/local/sbin:/usr/local/bin:/usr/bin/
+
+- name: Launch autorestic cron
+  become: yes
+  cron:
+    state: present
+    name: "Autorestic cron check"
+    minute: "*/5"
+    job: "autorestic -c /root/.autorestic.yml cron"
+
+- name: Launch forget cron
+  become: yes
+  cron:
+    state: present
+    name: "Autorestic forget old snap policy"
+    weekday: "6"
+    job: "autorestic -c /root/.autorestic.yml forget"
+
+- name: Create from folders if they don't exists
+  become: yes
+  when: autorestic_check
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ item.user | default(omit) }}"
+    group: "{{ item.group | default(omit) }}"
+    mode: "{{ item.mode | default(omit) }}"
+  loop: "{{ autorestic_location_paths }}"
+
+- name: Run autorestic check
+  become: yes
+  when: autorestic_check
+  shell: autorestic check -v
+
+- name: Get new generated yaml config with key
+  become: yes
+  when: autorestic_check
+  fetch:
+    src: /root/.autorestic.yml
+    dest: "{{ autorestic_generated_conf_path }}"
+    flat: yes

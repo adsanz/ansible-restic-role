@@ -1,0 +1,4 @@
+.vagrant
+.ansible
+.vscode
+.autorestic.yml

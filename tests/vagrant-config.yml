@@ -1,0 +1,12 @@
+develop:
+    name: "restic-role-testing"
+    memory: 1024
+    cpus: 2
+    ip: 10.10.0.3
+    ansible_inv_path: inventory
+    verbose: no
+    clone_repo: no
+    image: "generic/ubuntu2004"
+    nfs_mode: no
+  
+  

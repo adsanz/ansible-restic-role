@@ -1,0 +1,74 @@
+# Install vars
+restic_repo_install: false
+restic_binary_install: true
+restic_version: v1.1.1
+
+# source location paths
+autorestic_location_paths:
+  - path: /path/to/files
+  - path: /path/to/db_dump
+    user: root
+    group: root
+    mode: '664'
+
+# triggers
+autorestic_check: true
+
+# Autorestic configuration - https://cupcakearmy.github.io/autorestic/config
+restic_locations:
+  - files:
+      from: "{{ autorestic_location_paths[0].path }}"
+      to:
+        - s3
+      cron: '0 0 * * *'
+      options:
+        forget:
+          #keep-last: 5 # always keep at least 5 snapshots
+          #keep-hourly: 3 # keep 3 last hourly shapshots
+          #keep-daily: 4 # keep 4 last daily shapshots
+          #keep-weekly: 1 # keep 1 last weekly shapshots
+          #keep-monthly: 12 # keep 12 last monthly shapshots
+          #keep-yearly: 7 # keep 7 last yearly shapshots
+          keep-within: '6m' # keep snapshots from the last 6 month
+      backup:
+          exclude:
+          - '/path/to/media/do-not-want-this-on-backup'
+          - '*.this-files-sucks'
+  - db:
+      from: "{{ autorestic_location_paths[0].location }}"
+      to:
+        - sftp
+      cron: '0 0 * * *'
+      hooks:
+        before:
+          - 'mysqldump -u root -p database_name > /path/to/db_dump.sql'
+        after:
+          - 'rm -fr /path/to/db_dump.sql'
+        success:
+          - "logger -s '[AUTORESTIC] - BACK UP SUCCESSFULL FOR DB'"
+        failure:
+          - "logger -s '[AUTORESTIC] - BACK UP FAILED FOR DB'"
+      options:
+        forget:
+          #keep-last: 5 # always keep at least 5 snapshots
+          #keep-hourly: 3 # keep 3 last hourly shapshots
+          #keep-daily: 4 # keep 4 last daily shapshots
+          #keep-weekly: 1 # keep 1 last weekly shapshots
+          #keep-monthly: 12 # keep 12 last monthly shapshots
+          #keep-yearly: 7 # keep 7 last yearly shapshots
+          keep-within: '6m' # keep snapshots from the last 6 months
+
+restic_backends:
+  # SFTP uses de config inside ~/.ssh/config 
+  - sftp:
+      type: sftp
+      path: my.sftp.server:/path
+  - s3:
+      type: s3
+      path: s3.amazonaws.com/bucket_name
+      env:
+        AWS_ACCESS_KEY_ID: key
+        AWS_SECRET_ACCESS_KEY: secret
+
+# https://cupcakearmy.github.io/autorestic/qa#my-config-file-was-moved
+autorestic_generated_conf_path: files/

@@ -1,0 +1,42 @@
+restic_locations:
+  - files:
+      from: /home/vagrant/
+      to:
+        - local
+      cron: '0 0 * * *'
+      options:
+        backup:
+          exclude:
+            - '.profile'
+            - '.ssh'
+            - '.ansible'
+            - '.bashrc'
+            - '.viminfo'
+            - '.wget-hsts'
+            - '.bash_history'
+        forget:
+          keep-last: 3
+  - test:
+      from: /home/root/
+      to:
+        - local
+      cron: '0 0 * * *'
+      options:
+        backup:
+          exclude:
+            - '.profile'
+            - '.ssh'
+            - '.ansible'
+            - '.bashrc'
+            - '.viminfo'
+            - '.wget-hsts'
+            - '.bash_history'
+        forget:
+          keep-last: 3
+autorestic_check: false
+restic_backends:
+  - local:
+      type: local
+      path: /tmp/
+    
+autorestic_generated_conf_path: ./
